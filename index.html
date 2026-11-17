@@ -84,7 +84,7 @@ main{padding:24px 0 80px;display:flex;justify-content:center}
 .sec h2{margin:0;font-weight:600;font-size:24px;line-height:32px;letter-spacing:-.24px}
 .deal{display:flex;align-items:center;gap:8px}
 .deal .lc{color:var(--danger);font-size:18px;line-height:24px;letter-spacing:-.18px}
-.timer{background:#fff;border-radius:8px;padding:4px 8px;display:flex;gap:4px;align-items:center;color:var(--danger);font-size:14px;line-height:20px}
+.timer{background:#fff;border-radius:8px;padding:4px 8px;display:flex;gap:4px;align-items:center;color:var(--danger);font-size:14px;line-height:20px;font-variant-numeric:tabular-nums}
 /* widgets */
 .widgets{display:flex;flex-direction:column;gap:12px}
 .widget{background:#fff;border:1px solid var(--line);border-radius:24px;display:flex;overflow:hidden}
@@ -215,12 +215,12 @@ body.v2 .aside{display:block}
 .rs-wrap.open{pointer-events:auto} .rs-wrap.open .overlay{opacity:1}
 .rs{position:relative;width:360px;background:#fff;border-radius:24px;padding:40px 32px 32px;display:flex;flex-direction:column;align-items:center;gap:24px;text-align:center;opacity:0;transform:translateY(8px) scale(.98);transition:opacity .25s,transform .25s}
 .rs-wrap.open .rs{opacity:1;transform:none}
-.rs-illu{display:block;width:200px;height:auto;margin:-8px auto -4px}
+.rs-illu{display:block;width:140px;height:auto;margin:-8px auto -4px}
 .rs-text{display:flex;flex-direction:column;gap:8px}
 .rs-title{font-size:20px;line-height:28px;letter-spacing:-.2px} .rs-desc{font-weight:400;font-size:14px;line-height:20px}
 .rs .btn.primary{width:100%;height:52px}
 .rs .wa-x{right:12px;top:12px;border-radius:12px}
-@media (max-width:599px){ .rs{width:calc(100% - 24px);padding:32px 20px 24px;gap:20px} .rs-illu{width:168px;margin:-4px auto -4px} }
+@media (max-width:599px){ .rs{width:calc(100% - 24px);padding:32px 20px 24px;gap:20px} .rs-illu{width:120px;margin:-4px auto -4px} }
 /* prototype note: not product UI */
 .pnote{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;pointer-events:none}
 .pnote .pn-ov{position:absolute;inset:0;background:rgba(15,23,48,.5);opacity:0;transition:opacity .2s}
@@ -399,7 +399,7 @@ body.bar-on .vswitch{bottom:102px}
     <h2>Have everything for your trip?</h2>
     <div class="deal"><p class="lc">Last chance with 20% off</p><div class="timer"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M10 2.5C14.1421 2.5 17.5 5.85771 17.5 9.99965C17.5 14.1416 14.1421 17.4993 10 17.4993C5.85786 17.4993 2.5 14.1416 2.5 9.99965C2.5 5.85771 5.85786 2.5 10 2.5ZM10 5.22692C9.62347 5.22692 9.31807 5.53235 9.31803 5.90886V9.99965C9.31803 10.2578 9.46402 10.4936 9.69482 10.6092L12.4227 11.973C12.7594 12.1412 13.169 12.0046 13.3374 11.6679C13.5056 11.3311 13.3689 10.9215 13.0322 10.7532L10.682 9.57812V5.90886C10.6819 5.53235 10.3765 5.22692 10 5.22692Z" fill="#F74F26"/>
-</svg><span>9:41</span></div></div>
+</svg><span id="dealTimer" role="timer" aria-label="Offer ends in">10:00</span></div></div>
   </div>
 
   <div class="widgets">
@@ -711,6 +711,18 @@ body.bar-on .vswitch{bottom:102px}
   window.addEventListener('scroll',updateBar,{passive:true});
   window.addEventListener('resize',updateBar);
   applyV();
+
+  // deal timer: counts down 10:00 → 0:00, then starts again (prototype only, so the demo never shows an expired deal)
+  (function(){
+    var el=document.getElementById('dealTimer'); if(!el) return;
+    var DURATION=600, end=Date.now()+DURATION*1000;
+    function tick(){
+      var left=Math.round((end-Date.now())/1000);
+      if(left<=0){ end=Date.now()+DURATION*1000; left=DURATION; }
+      el.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+    }
+    tick(); setInterval(tick,1000);
+  })();
 
   // mobile app banner: after 5 s on the page or after a bit of scrolling
   var mq=window.matchMedia('(max-width: 839px)');
